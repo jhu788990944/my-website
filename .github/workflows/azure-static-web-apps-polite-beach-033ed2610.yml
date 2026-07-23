@@ -2,13 +2,11 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 stages:
-
 - stage: Build
-  displayName: 'Build Website'
-
+  displayName: Build Website
   jobs:
   - job: Build
     steps:
@@ -26,26 +24,25 @@ stages:
         ArtifactName: 'website'
 
 - stage: Deploy
-  displayName: 'Deploy to Production'
+  displayName: Deploy to Production
   dependsOn: Build
 
   jobs:
   - deployment: DeployWebsite
-    displayName: 'Deploy Website'
-    environment: 'Production'
+    displayName: Deploy Website
+    environment: Production
 
     strategy:
       runOnce:
         deploy:
           steps:
-
           - download: current
             artifact: website
 
           - task: AzureWebApp@1
-            displayName: 'Deploy to Azure Web App'
+            displayName: Deploy to Azure Web App
             inputs:
               azureSubscription: 'Azure subscription 1'
-              appType: 'webAppLinux'
+              appType: webAppLinux
               appName: 'mywebsite'
               package: '$(Pipeline.Workspace)/website'
