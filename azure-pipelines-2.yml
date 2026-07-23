@@ -1,0 +1,56 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+
+- stage: Build
+  displayName: 'Build'
+
+  jobs:
+  - job: BuildWebsite
+    displayName: 'Build Website'
+
+    steps:
+    - checkout: self
+
+    - task: CopyFiles@2
+      displayName: 'Copy Website Files'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'website'
+
+- stage: Deploy
+  displayName: 'Deploy'
+
+  dependsOn: Build
+
+  jobs:
+  - deployment: DeployWebsite
+    displayName: 'Deploy to Azure App Service'
+    environment: 'Production'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: website
+
+          - task: AzureWebApp@1
+            displayName: 'Deploy Website'
+            inputs:
+              azureSubscription: 'Azure subscription 1'
+              appType: 'webAppLinux'
+              appName: 'mywebsite'
+              package: '$(Pipeline.Workspace)/website'
