@@ -37,7 +37,8 @@ stages:
 
   jobs:
   - deployment: DeployWeb
-    environment: Production
+    displayName: Deploy Website
+    environment: 'Production'
 
     strategy:
       runOnce:
@@ -49,7 +50,7 @@ stages:
 
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: 'mywesbite'
+              azureSubscription: 'AzureServiceConnection'
               appType: 'webAppLinux'
               appName: 'mywebsite'
               package: '$(Pipeline.Workspace)/website'
