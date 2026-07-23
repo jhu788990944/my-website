@@ -49,7 +49,7 @@ stages:
 
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: 'AzureServiceConnection'
+              azureSubscription: 'mywesbite'
               appType: 'webAppLinux'
               appName: 'mywebsite'
               package: '$(Pipeline.Workspace)/website'
