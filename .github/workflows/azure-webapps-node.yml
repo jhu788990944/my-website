@@ -2,35 +2,38 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 stages:
+
 - stage: Build
-  displayName: Build Website
+  displayName: 'Build Website'
   jobs:
   - job: Build
     steps:
     - checkout: self
 
     - task: CopyFiles@2
+      displayName: 'Copy Website Files'
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'website'
 
 - stage: Deploy
-  displayName: Deploy to Production
+  displayName: 'Deploy to Production'
   dependsOn: Build
 
   jobs:
   - deployment: DeployWebsite
-    displayName: Deploy Website
-    environment: Production
+    displayName: 'Deploy Website'
+    environment: 'Production'
 
     strategy:
       runOnce:
@@ -40,9 +43,9 @@ stages:
             artifact: website
 
           - task: AzureWebApp@1
-            displayName: Deploy to Azure Web App
+            displayName: 'Deploy to Azure Web App'
             inputs:
               azureSubscription: 'Azure subscription 1'
-              appType: webAppLinux
+              appType: 'webAppLinux'
               appName: 'mywebsite'
               package: '$(Pipeline.Workspace)/website'
