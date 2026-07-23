@@ -7,43 +7,47 @@ pool:
 stages:
 
 - stage: Build
-  displayName: 'Build Website'
+  displayName: 'Build'
+
   jobs:
   - job: Build
+    displayName: 'Build Website'
+
     steps:
     - checkout: self
 
     - task: CopyFiles@2
-      displayName: 'Copy Website Files'
+      displayName: 'Copy Files'
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact'
+      displayName: 'Publish Build Artifact'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'website'
 
-- stage: Deploy
-  displayName: 'Deploy to Production'
+- stage: Production
+  displayName: 'Production'
   dependsOn: Build
 
   jobs:
-  - deployment: DeployWebsite
-    displayName: 'Deploy Website'
+  - deployment: Deploy
+    displayName: 'Deploy to Azure'
     environment: 'Production'
 
     strategy:
       runOnce:
         deploy:
           steps:
+
           - download: current
             artifact: website
 
           - task: AzureWebApp@1
-            displayName: 'Deploy to Azure Web App'
+            displayName: 'Deploy to Azure App Service'
             inputs:
               azureSubscription: 'Azure subscription 1'
               appType: 'webAppLinux'
